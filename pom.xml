@@ -1,0 +1,465 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+  xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
+
+  <modelVersion>4.0.0</modelVersion>
+  <!-- Use JBoss parent so all maven-plugins have a decent base version. -->
+  <!-- We don't use the -->
+  <parent>
+    <groupId>org.jboss</groupId>
+    <artifactId>jboss-parent</artifactId>
+    <version>25</version>
+    <relativePath />
+  </parent>
+
+  <groupId>org.optaplanner.openshift</groupId>
+  <artifactId>optashift-employee-rostering</artifactId>
+  <packaging>pom</packaging>
+  <version>7.8.0-SNAPSHOT</version>
+
+  <name>Employee Rostering as a Service Parent</name>
+  <description>
+    Employee Rostering as a Service with OptaPlanner on OpenShift 3.
+  </description>
+  <url>https://www.optaplanner.org</url>
+  <inceptionYear>2017</inceptionYear>
+
+  <repositories>
+    <!-- TODO remove this repository when we no longer use SNAPSHOT dependencies -->
+    <repository>
+      <id>jboss-public-repository-group</id>
+      <name>JBoss Public Repository Group</name>
+      <url>https://repository.jboss.org/nexus/content/groups/public/</url>
+      <layout>default</layout>
+      <releases>
+        <enabled>true</enabled>
+        <updatePolicy>never</updatePolicy>
+      </releases>
+      <snapshots>
+        <enabled>true</enabled>
+        <updatePolicy>daily</updatePolicy>
+      </snapshots>
+    </repository>
+  </repositories>
+
+  <properties>
+    <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+    <maven.compiler.source>1.8</maven.compiler.source>
+    <maven.compiler.target>1.8</maven.compiler.target>
+    <wildfly.parent>${project.basedir}/local/appserver</wildfly.parent>
+    <wildfly.home>${wildfly.parent}/wildfly-${version.org.wildfly.wildfly-dist}</wildfly.home>
+    <wildfly.launchdir>${project.basedir}/local/appserver/wildfly-${version.org.wildfly.wildfly-dist}</wildfly.launchdir>
+    <wildfly.install.skip>false</wildfly.install.skip>
+    <deployment.parent>${project.basedir}/${project.artifactId}-webapp/target</deployment.parent>
+    <deployment.name>${project.artifactId}-webapp-${project.version}</deployment.name>
+    <antrun.skip>false</antrun.skip>
+
+    <!--
+      It's recommended, but not required to align the versions as much as possible with
+      https://github.com/jboss-integration/jboss-integration-platform-bom/blob/master/pom.xml
+    -->
+    <version.ch.qos.logback>1.2.3</version.ch.qos.logback>
+    <version.com.fasterxml.jackson>2.8.8</version.com.fasterxml.jackson>
+    <version.com.github.nmorel.gwtjackson.restprocessor>0.4.1</version.com.github.nmorel.gwtjackson.restprocessor>
+    <version.com.github.nmorel.gwtjackson>0.14.2</version.com.github.nmorel.gwtjackson>
+    <version.com.google.gwt>2.8.2</version.com.google.gwt>
+    <version.io.swagger>1.5.15</version.io.swagger>
+    <version.javax.javaee-api>7.0</version.javax.javaee-api>
+    <version.net.ltgt.gwt.maven.gwt-maven-plugin>1.0-rc-9</version.net.ltgt.gwt.maven.gwt-maven-plugin>
+    <version.org.gwtbootstrap3>0.9.4</version.org.gwtbootstrap3>
+    <version.org.jboss.errai>4.1.2.Final</version.org.jboss.errai>
+    <version.org.jboss.resteasy>3.1.4.Final</version.org.jboss.resteasy>
+    <version.org.optaplanner>${project.version}</version.org.optaplanner>
+    <version.org.slf4j>1.7.25</version.org.slf4j>
+    <version.org.webjars.bower.org.patternfly>3.18.1</version.org.webjars.bower.org.patternfly>
+    <version.org.wildfly-plugins.wildfly-maven-plugin>1.2.0.Final</version.org.wildfly-plugins.wildfly-maven-plugin>
+    <version.org.wildfly.wildfly-dist>11.0.0.Final</version.org.wildfly.wildfly-dist>
+    <version.org.codehaus.cargo.cargo-maven2-plugin>1.6.5</version.org.codehaus.cargo.cargo-maven2-plugin>
+    <version.wildfly>11.0.0.Final</version.wildfly>
+  </properties>
+
+  <modules>
+    <module>optashift-employee-rostering-shared</module>
+    <!-- The modules optashift-employee-rostering-shared-gwt and optashift-employee-rostering-gwtui
+       are added by the maven profile withGwt (which is enabled by default) -->
+    <module>optashift-employee-rostering-server</module>
+    <module>optashift-employee-rostering-restclient</module>
+    <module>optashift-employee-rostering-webapp</module>
+    <module>optashift-employee-rostering-benchmark</module>
+    <module>optashift-employee-rostering-docs</module>
+    <module>optashift-employee-rostering-distribution</module>
+  </modules>
+
+  <dependencyManagement>
+    <dependencies>
+      <!-- Internal -->
+      <dependency>
+        <groupId>org.optaplanner.openshift</groupId>
+        <artifactId>optashift-employee-rostering-shared</artifactId>
+        <version>${project.version}</version>
+      </dependency>
+      <dependency>
+        <groupId>org.optaplanner.openshift</groupId>
+        <artifactId>optashift-employee-rostering-shared</artifactId>
+        <version>${project.version}</version>
+        <classifier>sources</classifier>
+      </dependency>
+      <dependency>
+        <groupId>org.optaplanner.openshift</groupId>
+        <artifactId>optashift-employee-rostering-shared-gwt</artifactId>
+        <type>gwt-lib</type>
+        <version>${project.version}</version>
+      </dependency>
+      <dependency>
+        <groupId>org.optaplanner.openshift</groupId>
+        <artifactId>optashift-employee-rostering-gwtui</artifactId>
+        <type>war</type>
+        <version>${project.version}</version>
+      </dependency>
+      <dependency>
+        <groupId>org.optaplanner.openshift</groupId>
+        <artifactId>optashift-employee-rostering-server</artifactId>
+        <version>${project.version}</version>
+      </dependency>
+      <dependency>
+        <groupId>org.optaplanner.openshift</groupId>
+        <artifactId>optashift-employee-rostering-webapp</artifactId>
+        <type>war</type>
+        <version>${project.version}</version>
+      </dependency>
+      <dependency>
+        <groupId>org.optaplanner.openshift</groupId>
+        <artifactId>optashift-employee-rostering-docs</artifactId>
+        <type>zip</type>
+        <version>${project.version}</version>
+      </dependency>
+      <dependency>
+        <groupId>org.optaplanner.openshift</groupId>
+        <artifactId>optashift-employee-rostering-restclient</artifactId>
+        <version>${project.version}</version>
+      </dependency>
+
+      <!-- JEE -->
+      <dependency>
+        <groupId>javax</groupId>
+        <artifactId>javaee-api</artifactId>
+        <version>${version.javax.javaee-api}</version>
+      </dependency>
+      <dependency>
+        <groupId>com.fasterxml.jackson.core</groupId>
+        <artifactId>jackson-annotations</artifactId>
+        <version>${version.com.fasterxml.jackson}</version>
+      </dependency>
+      <dependency>
+        <groupId>com.fasterxml.jackson.core</groupId>
+        <artifactId>jackson-databind</artifactId>
+        <version>${version.com.fasterxml.jackson}</version>
+      </dependency>
+      <dependency>
+        <groupId>com.fasterxml.jackson.datatype</groupId>
+        <artifactId>jackson-datatype-jsr310</artifactId>
+        <version>${version.com.fasterxml.jackson}</version>
+      </dependency>
+      <!-- KIE -->
+      <dependency>
+        <groupId>org.optaplanner</groupId>
+        <artifactId>optaplanner-bom</artifactId>
+        <type>pom</type>
+        <version>${version.org.optaplanner}</version>
+        <scope>import</scope>
+      </dependency>
+      <!-- Logging -->
+      <dependency>
+        <groupId>org.slf4j</groupId>
+        <artifactId>slf4j-api</artifactId>
+        <version>${version.org.slf4j}</version>
+      </dependency>
+      <dependency>
+        <groupId>ch.qos.logback</groupId>
+        <artifactId>logback-classic</artifactId>
+        <version>${version.ch.qos.logback}</version>
+      </dependency>
+      <dependency>
+        <groupId>org.slf4j</groupId>
+        <artifactId>jcl-over-slf4j</artifactId>
+        <version>${version.org.slf4j}</version>
+      </dependency>
+
+      <!-- GWT -->
+      <dependency>
+        <groupId>com.google.gwt</groupId>
+        <artifactId>gwt</artifactId>
+        <version>${version.com.google.gwt}</version>
+        <type>pom</type>
+        <scope>import</scope>
+      </dependency>
+      <dependency>
+        <groupId>org.jboss.errai.bom</groupId>
+        <artifactId>errai-bom</artifactId>
+        <version>${version.org.jboss.errai}</version>
+        <type>pom</type>
+        <scope>import</scope>
+      </dependency>
+      <dependency>
+        <groupId>org.jboss.resteasy</groupId>
+        <artifactId>resteasy-client</artifactId>
+        <version>${version.org.jboss.resteasy}</version>
+      </dependency>
+      <dependency>
+        <groupId>org.jboss.resteasy</groupId>
+        <artifactId>resteasy-jaxrs</artifactId>
+        <version>${version.org.jboss.resteasy}</version>
+      </dependency>
+      <dependency>
+        <groupId>org.jboss.resteasy</groupId>
+        <artifactId>resteasy-jackson-provider</artifactId>
+        <version>${version.org.jboss.resteasy}</version>
+      </dependency>
+      
+      <dependency>
+        <!-- TODO remove me, workaround for https://github.com/errai/errai/issues/256 -->
+        <groupId>xerces</groupId>
+        <artifactId>xercesImpl</artifactId>
+        <version>2.11.0</version>
+      </dependency>
+      <dependency>
+        <groupId>com.github.nmorel.gwtjackson</groupId>
+        <artifactId>gwt-jackson</artifactId>
+        <version>${version.com.github.nmorel.gwtjackson}</version>
+      </dependency>
+      <dependency>
+        <groupId>com.github.nmorel.gwtjackson</groupId>
+        <artifactId>gwt-jackson-rest-processor</artifactId>
+        <version>${version.com.github.nmorel.gwtjackson.restprocessor}</version>
+      </dependency>
+      <dependency>
+        <groupId>org.gwtbootstrap3</groupId>
+        <artifactId>gwtbootstrap3</artifactId>
+        <version>${version.org.gwtbootstrap3}</version>
+      </dependency>
+      <dependency>
+        <groupId>org.gwtbootstrap3</groupId>
+        <artifactId>gwtbootstrap3-extras</artifactId>
+        <version>${version.org.gwtbootstrap3}</version>
+      </dependency>
+      <!-- Swagger -->
+      <dependency>
+      	<groupId>io.swagger</groupId>
+      	<artifactId>swagger-jaxrs</artifactId>
+      	<version>${version.io.swagger}</version>
+      </dependency>
+      <dependency>
+      	<groupId>io.swagger</groupId>
+      	<artifactId>swagger-annotations</artifactId>
+      	<version>${version.io.swagger}</version>
+      </dependency>
+    </dependencies>
+  </dependencyManagement>
+
+  <build>
+    <plugins>
+      <plugin>
+        <groupId>org.apache.maven.plugins</groupId>
+        <artifactId>maven-dependency-plugin</artifactId>
+        <inherited>false</inherited>
+        <executions>
+          <execution>
+            <id>unpack</id>
+            <phase>package</phase>
+            <goals>
+              <goal>unpack</goal>
+            </goals>
+            <configuration>
+              <skip>${wildfly.install.skip}</skip>
+              <artifactItems>
+                <artifactItem>
+                  <groupId>org.wildfly</groupId>
+                  <artifactId>wildfly-dist</artifactId>
+                  <version>${version.org.wildfly.wildfly-dist}</version>
+                  <type>zip</type>
+                  <overWrite>false</overWrite>
+                  <outputDirectory>${wildfly.parent}</outputDirectory>
+                </artifactItem>
+              </artifactItems>
+            </configuration>
+          </execution>
+        </executions>
+      </plugin>
+
+      <plugin>
+        <groupId>org.apache.maven.plugins</groupId>
+        <artifactId>maven-antrun-plugin</artifactId>
+        <inherited>false</inherited>
+        <executions>
+          <execution>
+            <id>create-symbolic-link</id>
+            <phase>package</phase>
+            <goals>
+              <goal>run</goal>
+            </goals>
+            <configuration>
+              <skip>${antrun.skip}</skip>
+              <target>
+                <symlink
+                  link="${wildfly.launchdir}/standalone/deployments/${deployment.name}.war"
+                  resource="${deployment.parent}/${deployment.name}"
+                  overwrite="true" />
+              </target>
+            </configuration>
+          </execution>
+        </executions>
+      </plugin>
+
+
+      <plugin>
+        <groupId>net.ltgt.gwt.maven</groupId>
+        <artifactId>gwt-maven-plugin</artifactId>
+      </plugin>
+
+      <plugin>
+        <groupId>org.wildfly.plugins</groupId>
+        <artifactId>wildfly-maven-plugin</artifactId>
+        <version>${version.org.wildfly-plugins.wildfly-maven-plugin}</version>
+        <inherited>false</inherited>
+        <executions>
+          <execution>
+            <id>default-cli</id>
+            <goals>
+              <goal>start</goal>
+              <goal>deploy</goal>
+              <goal>redeploy-only</goal>
+            </goals>
+            <configuration>
+              <jbossHome>${wildfly.launchdir}</jbossHome>
+              <filename>${deployment.name}.war/</filename>
+              <targetDir>${wildfly.launchdir}/standalone/deployments</targetDir>
+              <name>optashift-employee-rostering.war</name>
+              <checkPackaging>false</checkPackaging>
+            </configuration>
+          </execution>
+        </executions>
+      </plugin>
+    </plugins>
+
+    <pluginManagement>
+      <plugins>
+        <plugin>
+          <groupId>net.ltgt.gwt.maven</groupId>
+          <artifactId>gwt-maven-plugin</artifactId>
+          <version>${version.net.ltgt.gwt.maven.gwt-maven-plugin}</version>
+          <extensions>true</extensions>
+          <configuration>
+            <style>PRETTY</style>
+            <!-- TODO turn this one, probably after GWT supports java.time -->
+            <!--<failOnError>true</failOnError> -->
+            <devmodeArgs>
+              <!-- GWT Super Dev Mode: Replace default backend by WildFly -->
+              <arg>-server</arg>
+              <arg>org.jboss.errai.cdi.server.gwt.EmbeddedWildFlyLauncher</arg>
+              <arg>-startupUrl</arg>
+              <arg>gwtui/gwtui.html</arg>
+            </devmodeArgs>
+            <jvmArgs>
+              <!-- Remote debugger: uncomment this line to debug the WildFly 
+                backend -->
+              <!--<arg>-agentlib:jdwp=transport=dt_socket,server=y,suspend=n,address=5005</arg> -->
+            </jvmArgs>
+            <!-- GWT Super Dev Mode: deploy backend correctly -->
+            <launcherDir>${deployment.parent}/${deployment.name}</launcherDir>
+            <systemProperties>
+              <!-- GWT Super Dev Mode: which WildFly to use -->
+              <errai.jboss.home>${wildfly.home}</errai.jboss.home>
+              <!-- Make IDE war run config and GWT Super Dev Mode use same 
+                deployment context to avoid duplicate, conflicting deployment -->
+              <errai.dev.context>optashift-employee-rostering</errai.dev.context>
+            </systemProperties>
+          </configuration>
+        </plugin>
+        <plugin>
+          <groupId>org.apache.maven.plugins</groupId>
+          <artifactId>maven-compiler-plugin</artifactId>
+        </plugin>
+
+        <plugin>
+          <groupId>org.apache.maven.plugins</groupId>
+          <artifactId>maven-war-plugin</artifactId>
+        </plugin>
+
+        <plugin>
+          <groupId>org.apache.maven.plugins</groupId>
+          <artifactId>maven-antrun-plugin</artifactId>
+        </plugin>
+
+        <plugin>
+          <groupId>org.codehaus.cargo</groupId>
+          <artifactId>cargo-maven2-plugin</artifactId>
+          <version>${version.org.codehaus.cargo.cargo-maven2-plugin}</version>
+        </plugin>
+      </plugins>
+    </pluginManagement>
+  </build>
+
+  <profiles>
+    <profile>
+      <id>withGwt</id>
+      <activation>
+        <property>
+          <name>!withoutGwt</name>
+        </property>
+      </activation>
+      <modules>
+        <module>optashift-employee-rostering-shared-gwt</module>
+        <module>optashift-employee-rostering-gwtui</module>
+      </modules>
+    </profile>
+
+    <profile>
+      <!-- Use this profile for any OpenShift specific customization your 
+        app will need. -->
+      <id>openshift</id>
+      <properties>
+        <wildfly.install.skip>true</wildfly.install.skip>
+        <antrun.skip>true</antrun.skip>
+        <cargo.maven.skip>true</cargo.maven.skip>
+      </properties>
+      <build>
+        <plugins>
+          <plugin>
+            <groupId>net.ltgt.gwt.maven</groupId>
+            <artifactId>gwt-maven-plugin</artifactId>
+            <configuration>
+              <!-- Minify the JavaScript code to improve latency -->
+              <style>OBFUSCATED</style>
+              <!-- Remove warnings that only appear on OpenShift -->
+              <compilerArgs>
+                <arg>-XdisableUpdateCheck</arg>
+              </compilerArgs>
+              <!-- Avoid crash "error code 137" on OpenShift -->
+              <localWorkers>1</localWorkers>
+              <jvmArgs>
+                <arg>-Xmx1024m</arg>
+                <arg>-Xss256k</arg>
+              </jvmArgs>
+            </configuration>
+          </plugin>
+          <plugin>
+            <groupId>org.apache.maven.plugins</groupId>
+            <artifactId>maven-failsafe-plugin</artifactId>
+            <configuration>
+              <!-- Because cargo was skipped -->
+              <skipITs>true</skipITs>
+            </configuration>
+          </plugin>
+        </plugins>
+      </build>
+    </profile>
+
+    <profile>
+      <id>deploy</id>
+      <properties>
+        <antrun.skip>true</antrun.skip>
+      </properties>
+    </profile>
+  </profiles>
+
+</project>

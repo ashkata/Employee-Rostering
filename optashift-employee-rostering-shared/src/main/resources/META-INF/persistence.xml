@@ -1,0 +1,33 @@
+<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<persistence xmlns="http://xmlns.jcp.org/xml/ns/persistence" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+             version="2.1" xsi:schemaLocation="http://xmlns.jcp.org/xml/ns/persistence http://xmlns.jcp.org/xml/ns/persistence/persistence_2_1.xsd">
+ <!-- <persistence-unit name="optashift-employee-rostering-persistence-unit" transaction-type="JTA">
+    <description>Hibernate Persistence Unit</description>
+    <jta-data-source>java:jboss/datasources/ExampleDS</jta-data-source>
+    <exclude-unlisted-classes>false</exclude-unlisted-classes>
+    <properties>
+      <property name="hibernate.hbm2ddl.auto" value="create"/>
+      <!-- <property name="hibernate.show_sql" value="true"/>
+      <property name="hibernate.format_sql" value="true"/>
+      <property name="hibernate.transaction.flush_before_completion" value="true"/>
+      <property name="hibernate.dialect" value="org.hibernate.dialect.H2Dialect"/>
+      <property name="hibernate.event.merge.entity_copy_observer" value="allow"/>
+    </properties>
+  </persistence-unit> -->
+  
+  <persistence-unit name="optashift-employee-rostering-persistence-unit" transaction-type="JTA">
+  <description>Postgres Persistence Unit</description>
+  <jta-data-source>java:jboss/datasources/PostgresqlDS</jta-data-source>
+  <exclude-unlisted-classes>false</exclude-unlisted-classes>
+  <properties>
+			<property name="hibernate.archive.autodetection" value="class" />
+			<property name="hibernate.dialect" value="org.hibernate.dialect.PostgreSQLDialect" />
+			<property name="hibernate.connection.driver_class" value="org.postgresql.Driver" />
+			<property name="hibernate.connection.url" value="jdbc:postgresql://localhost:5432/opta" />
+			<property name="hibernate.connection.username" value="postgres" />
+			<property name="hibernate.connection.password" value="HK36psq659" />
+			<!-- <property name="hibernate.show_sql" value="true"/> -->
+			<property name="hibernate.flushMode" value="FLUSH_AUTO" />
+			<property name="hibernate.hbm2ddl.auto" value="update" />
+		</properties>
+</persistence>

@@ -1,0 +1,128 @@
+= Employee Rostering Optimization as a Service
+
+An example https://www.optaplanner.org/[OptaPlanner] webapp ready to deploy on https://www.openshift.com/[OpenShift 3].
+
+See https://www.youtube.com/watch?v=sOWC4qrXxFk[the video demo].
+
+== Running on OpenShift
+
+=== Prerequisites
+
+. Install https://www.openshift.org/download.html[the oc client tools]
+
+To copy-paste your command, go to https://manage.openshift.com/[the OpenShift Online web console] and look for _Help_ > _Command line tools_.
+
+=== Locally with OpenShift Origin
+
+. If you just installed oc client tools, follow the https://github.com/openshift/origin/blob/master/docs/cluster_up_down.md[OpenShift Local Cluster Management] docs to get `oc cluster (up|down)` working.
+. `oc cluster up`
+. `oc login`, enter "developer" for both username and password when prompted
+. `oc new-project <your-project-name>` (ex: "openshift", must consist of only lowercase letters, numbers and hypens)
+. `oc new-app --image-stream="openshift/wildfly:11.0" https://github.com/kiegroup/optashift-employee-rostering.git#master`
+
+To trigger a new build with the latest updates from the master branch, run
+
+`oc start-build optashift-employee-rostering`
+
+To delete the OpenShift application and project, run
+
+`oc delete project <your-project-name>`
+
+=== OpenShift Dedicated
+
+. Login to OpenShift Dedicated from command line
++
+(With username and password)
++
+`oc login -u=<username> -p=<password> --server=<your-openshift-server> --insecure-skip-tls-verify`
++
+(With OAuth token)
++
+`oc login <https://api.your-openshift-server.com> --token=<tokenID>`
+
+. `oc new-project <your-project-name>` (ex: "openshift", must consist of only lowercase letters, numbers and hypens)
+. `oc new-app --image-stream="openshift/wildfly:11.0" https://github.com/kiegroup/optashift-employee-rostering.git#master`
+
+To trigger a new build with the latest updates from the master branch, run
+
+`oc start-build optashift-employee-rostering`
+
+To delete the OpenShift application and project, run
+
+`oc delete project <your-project-name>`
+
+=== OpenShift Online
+
+Login to OpenShift Online from command line
+
+(With username and password)
+
+`oc login -u=<username> -p=<password> --server=<your-openshift-server> --insecure-skip-tls-verify`
+
+(With OAuth token)
+
+`oc login <https://api.your-openshift-server.com> --token=<tokenID>`
+
+Create the project, build the `war` file locally and provision it on OpenShift:
+
+`./provision.sh setup employee-rostering --binary`
+
+That's it, it should now be running on the web.
+Go to https://manage.openshift.com/[the OpenShift Online web console]
+to get the `*.openshiftapps.com` URL.
+
+Later, you can just run this command to deploy new code changes:
+
+`./provision.sh deploy employee-rostering --binary`
+
+Or this command to delete the OpenShift Online application and project:
+
+`./provision.sh delete employee-rostering`
+
+== Development
+
+=== Code formatter
+
+Both IntelliJ and Eclipse formatters are available here: https://github.com/kiegroup/droolsjbpm-build-bootstrap/tree/master/ide-configuration
+
+=== Building from source
+
+```
+mvn clean install
+```
+
+Under the covers, OpenShift builds activate the `openshift` profile.
+To reproduce locally, add it explicitly (the `provision.sh` script already does this):
+
+```
+mvn clean package -P openshift
+```
+
+=== IntelliJ IDEA 2017.3 (and above)
+
+. https://youtrack.jetbrains.com/issue/IDEA-171158[IntelliJ 2017.3 now supports the new GWT plugin]
+. `TODO: Test and document`
+
+
+=== IntelliJ IDEA 2017.2 (and below) + CLI
+
+The steps below make sure that the GWT Codeserver will recompile the application after files under `src/main/resources` are saved.
+
+. Import the maven project by choosing the root `pom.xml` file and selecting `Open as project`
+. Install the `Save Actions` plugin
+. Restart IntelliJ (required after installing the plugin)
+. Under `Other settings`, go to the `Save Actions` submenu and check either the first or the second options in the `General` section
+. Check the `Compile file` option in the `Build actions` section
+
+After configuring the `Save Actions` plugin, you should be able to start Wildfly and deploy the application from the CLI. Note that if you need to restart the GWT Code Server, it's not mandatory to restart Wildfly.
+
+```
+mvn -N wildfly:start wildfly:deploy
+mvn gwt:codeserver
+```
+
+To stop the Wildfly server, use `mvn -N wildfly:shutdown`.
+
+=== Eclipse
+. `TODO: Document`
+
